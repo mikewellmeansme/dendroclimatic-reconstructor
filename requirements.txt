@@ -1,0 +1,9 @@
+pandas
+matplotlib
+numpy
+seaborn
+scikit-learn
+scipy
+zhutils @ git+https://github.com/mikewellmeansme/ZhUtils.git
+pandera
+openpyxl

@@ -1,0 +1,12 @@
+feature_loader_kwargs:
+    path: "data/processed/pca_features.csv"
+
+climate_loader_kwargs:
+    climate_path: "data/processed/climate/climate_tashtyp.csv"
+    reanalysis_path: "data/processed/climate/reanalysis_tashtyp.csv"
+
+path_to_db: "notebooks/exploratory/gridsearch_parallel_test.db"
+
+gridsearch_kwargs:
+    day_window: 7
+    kind_name: REAL

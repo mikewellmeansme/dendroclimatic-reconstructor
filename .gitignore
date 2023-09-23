@@ -1,0 +1,4 @@
+.venv
+notebooks
+reports
+*__pycache__
