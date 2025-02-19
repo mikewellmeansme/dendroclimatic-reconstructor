@@ -1,6 +1,8 @@
+import logging
 import sqlite3
 import concurrent.futures
 import time
+import warnings
 
 from sklearn.metrics import r2_score, mean_squared_error
 from typing import Optional, Union
@@ -10,6 +12,9 @@ from src.data import ClimateLoader
 from src.validation import RollingLeaveOneOut
 from src.visualization import progressBar
 
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
+logger = logging.getLogger(__name__)
 
 
 def worker(
@@ -62,7 +67,7 @@ def grid_search_pca(
         clim_ = cl.get_climate(stat, day_window, year_window, p_threshold)
         end_time_1 = time.perf_counter()
 
-        print(f'Climate creation {year_window}:', end_time_1-start_time_1)
+        logger.debug(f'Climate creation {year_window}:', end_time_1-start_time_1)
 
         for pca_ncomponents in pca_ncomponents_range:
             start_time_2 = time.perf_counter()
@@ -71,7 +76,7 @@ def grid_search_pca(
             df = pca_features.join(clim_, how='inner')
 
             end_time_2 = time.perf_counter()
-            print(f'PCA creation {pca_ncomponents}:', end_time_2-start_time_2)
+            logger.debug(f'PCA creation {pca_ncomponents}:', end_time_2-start_time_2)
             
 
             start_time_3 = time.perf_counter()
@@ -89,7 +94,7 @@ def grid_search_pca(
             concurrent.futures.wait(futures)
 
             end_time_3 = time.perf_counter()
-            print('Futures end:', end_time_3-start_time_3)
+            logger.debug('Futures end:', end_time_3-start_time_3)
 
             start_time_4 = time.perf_counter()
             prefix = f"'{kind_name}', {day_window}, {year_window}, {pca_ncomponents}, '{stat}', "
@@ -97,7 +102,7 @@ def grid_search_pca(
             cursor.execute(f"""INSERT INTO {table_name} VALUES {", ".join(values_to_insert)};""")
             end_time_4 = time.perf_counter()
 
-            print('DB writing:', end_time_4-start_time_4)
+            logger.debug('DB writing:', end_time_4-start_time_4)
             
     db.commit()
     
