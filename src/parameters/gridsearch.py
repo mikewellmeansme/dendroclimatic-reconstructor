@@ -49,7 +49,8 @@ def grid_search_pca(
         p_threshold: float = 0.001,
         kind_name: str = 'REAL',
         table_name: str = 'results',
-        max_workers: int = 6
+        max_workers: int = 6,
+        stat: str = "Temperature"
     ):
     cursor = db.cursor()
     year_window_range = year_window_range or range(1, 15)
@@ -58,7 +59,7 @@ def grid_search_pca(
 
     for year_window in progressBar(year_window_range):
         start_time_1 = time.perf_counter()
-        clim_ = cl.get_climate(day_window=day_window, year_window=year_window, p_threshold=p_threshold)
+        clim_ = cl.get_climate(stat, day_window, year_window, p_threshold)
         end_time_1 = time.perf_counter()
 
         print(f'Climate creation {year_window}:', end_time_1-start_time_1)
@@ -91,7 +92,7 @@ def grid_search_pca(
             print('Futures end:', end_time_3-start_time_3)
 
             start_time_4 = time.perf_counter()
-            prefix = f"'{kind_name}', {day_window}, {year_window}, {pca_ncomponents}, "
+            prefix = f"'{kind_name}', {day_window}, {year_window}, {pca_ncomponents}, '{stat}', "
             values_to_insert = [f"({prefix} {future.result()})" for future in futures]
             cursor.execute(f"""INSERT INTO {table_name} VALUES {", ".join(values_to_insert)};""")
             end_time_4 = time.perf_counter()
